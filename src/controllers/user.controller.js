@@ -96,7 +96,10 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+    let coverImage = null;
+    if (coverImageLocalPath) {
+        coverImage = await uploadOnCloudinary(coverImageLocalPath);
+    }
 
     if (!avatar) {
         throw new ApiError(400, "Avatar File upload failed")
@@ -116,7 +119,9 @@ const registerUser = asyncHandler(async (req, res) => {
     if (!createdUser) {
         throw new ApiError(500, "Something went wrong while registering the user")
     }
-    return res.status(201).json(new ApiResponse(200, createdUser, "User registered successfully"))
+    return res.status(201).json(
+        new ApiResponse(201, createdUser, "User registered successfully")
+    );
 
 })
 
