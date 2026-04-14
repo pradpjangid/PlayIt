@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_app/liked-videos")({
 
 function LikedVideosPage() {
   const { data, isLoading } = useGetLikedVideosQuery(undefined);
-  const videos = data?.data || [];
+  const videos = data?.data?.videos ?? [];
 
   return (
     <div>

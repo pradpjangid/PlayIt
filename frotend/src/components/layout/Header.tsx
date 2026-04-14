@@ -24,7 +24,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
       navigate({ to: "/", search: { query: searchQuery } });
     }
   };
-
+  console.log('user', user)
   const handleLogout = async () => {
     try {
       await logoutApi(undefined).unwrap();

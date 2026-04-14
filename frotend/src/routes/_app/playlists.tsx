@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_app/playlists")({
 function PlaylistsPage() {
   const { user } = useAppSelector((state) => state.auth);
   const { data, isLoading } = useGetUserPlaylistsQuery(user?._id || "", { skip: !user?._id });
-  const playlists = data?.data || [];
+  const playlists = data?.data?.playlists ?? [];
 
   return (
     <div>

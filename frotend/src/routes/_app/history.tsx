@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_app/history")({
 
 function HistoryPage() {
   const { data, isLoading } = useGetWatchHistoryQuery(undefined);
-  const videos = data?.data || [];
+  const videos = data?.data?.videos ?? [];
 
   return (
     <div>

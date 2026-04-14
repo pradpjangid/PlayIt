@@ -115,7 +115,7 @@ function ChannelPage() {
 
 function ChannelVideos({ userId }: { userId: string }) {
   const { data, isLoading } = useGetAllVideosQuery({ userId });
-  const videos = data?.data?.docs || data?.data || [];
+  const videos = data?.data?.videos ?? [];
 
   if (isLoading) return <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto" />;
 
@@ -130,7 +130,7 @@ function ChannelVideos({ userId }: { userId: string }) {
 
 function ChannelTweets({ userId }: { userId: string }) {
   const { data, isLoading } = useGetUserTweetsQuery(userId);
-  const tweets = data?.data || [];
+  const tweets = data?.data?.tweets ?? [];
 
   if (isLoading) return <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto" />;
 
@@ -152,7 +152,7 @@ function ChannelTweets({ userId }: { userId: string }) {
 
 function ChannelFollowing({ channelId }: { channelId: string }) {
   const { data, isLoading } = useGetSubscribedChannelsQuery(channelId);
-  const channels = data?.data || [];
+  const channels = data?.data?.channels ?? [];
 
   if (isLoading) return <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto" />;
 

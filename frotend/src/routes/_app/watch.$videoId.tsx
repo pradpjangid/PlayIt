@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ThumbsUp, Share2, Loader2, Send, UserPlus, UserCheck } from "lucide-react";
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/watch/$videoId")({
   component: WatchPage,
@@ -17,14 +18,16 @@ function WatchPage() {
   const { videoId } = Route.useParams();
   const { data: videoData, isLoading } = useGetVideoByIdQuery(videoId);
   const { data: commentsData } = useGetVideoCommentsQuery({ videoId });
-  const [toggleLike] = useToggleVideoLikeMutation();
-  const [toggleSub] = useToggleSubscriptionMutation();
+  const [toggleLike, { isLoading: liking }] = useToggleVideoLikeMutation();
+  const [toggleSub, { isLoading: subscribing }] = useToggleSubscriptionMutation();
   const [addComment] = useAddCommentMutation();
   const [commentText, setCommentText] = useState("");
+  const [isLiked, setIsLiked] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false)
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   const video = videoData?.data;
-  const comments = commentsData?.data?.docs || commentsData?.data || [];
+  const comments = commentsData?.data?.comments ?? [];
 
   const handleAddComment = async () => {
     if (!commentText.trim()) return;
@@ -32,7 +35,28 @@ function WatchPage() {
       await addComment({ videoId, content: commentText }).unwrap();
       setCommentText("");
     } catch {
-      // handle error
+      console.log("Error adding comment");
+    }
+  };
+
+
+  const handleLike = async () => {
+    try {
+      await toggleLike(videoId).unwrap();
+      setIsLiked((prev) => !prev);
+      toast.success(isLiked ? "Removed like" : "Liked video ❤️");
+    } catch {
+      console.log("Error liking video");
+    }
+  };
+
+  const handleSubscribe = async () => {
+    try {
+      await toggleSub(video.owner).unwrap();
+      setIsSubscribed((prev) => !prev);
+      toast.success(isSubscribed ? "Unsubscribed" : "Subscribed 🔔");
+    } catch {
+      console.log("Error subscribing to channel");
     }
   };
 
@@ -76,7 +100,7 @@ function WatchPage() {
             <div className="flex flex-wrap items-center justify-between gap-4 mt-3">
               <div className="flex items-center gap-3">
                 {video.owner && (
-                  <Link to="/channel/$userName" params={{ userName: video.owner.userName }}>
+                  <Link to="/channel/$userName" params={{ userName: video.owner }}>
                     <img
                       src={video.owner.avatar}
                       alt={video.owner.fullName}
@@ -90,26 +114,38 @@ function WatchPage() {
                 </div>
                 {isAuthenticated && video.owner && (
                   <Button
-                    variant="secondary"
+                    variant={isSubscribed ? "default" : "secondary"}
                     size="sm"
                     className="rounded-full ml-3"
-                    onClick={() => toggleSub(video.owner._id)}
+                    onClick={handleSubscribe}
+                    disabled={subscribing}
                   >
-                    <UserPlus className="w-4 h-4 mr-1" />
-                    Subscribe
+                    {subscribing ? (
+                      <Loader2 className="w-4 h-4 animate-spin mr-1" />
+                    ) : isSubscribed ? (
+                      <UserCheck className="w-4 h-4 mr-1" />
+                    ) : (
+                      <UserPlus className="w-4 h-4 mr-1" />
+                    )}
+                    {isSubscribed ? "Subscribed" : "Subscribe"}
                   </Button>
                 )}
               </div>
               <div className="flex items-center gap-2">
                 {isAuthenticated && (
                   <Button
-                    variant="secondary"
+                    variant={isLiked ? "default" : "secondary"}
                     size="sm"
                     className="rounded-full"
-                    onClick={() => toggleLike(videoId)}
+                    onClick={handleLike}
+                    disabled={liking}
                   >
-                    <ThumbsUp className="w-4 h-4 mr-1" />
-                    Like
+                    {liking ? (
+                      <Loader2 className="w-4 h-4 animate-spin mr-1" />
+                    ) : (
+                      <ThumbsUp className="w-4 h-4 mr-1" />
+                    )}
+                    {isLiked ? "Liked" : "Like"}
                   </Button>
                 )}
                 <Button variant="secondary" size="sm" className="rounded-full">

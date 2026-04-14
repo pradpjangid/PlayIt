@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_app/subscribers")({
 function SubscribersPage() {
   const { user } = useAppSelector((state) => state.auth);
   const { data, isLoading } = useGetUserChannelSubscribersQuery(user?._id || "", { skip: !user?._id });
-  const subscribers = data?.data || [];
+  const subscribers = data?.data?.subscribers ?? [];
 
   return (
     <div>

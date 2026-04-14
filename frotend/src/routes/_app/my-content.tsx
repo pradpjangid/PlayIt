@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_app/my-content")({
 
 function MyContentPage() {
   const { data, isLoading } = useGetChannelVideosQuery(undefined);
-  const videos = data?.data || [];
+  const videos = data?.data?.videos ?? [];
 
   return (
     <div>

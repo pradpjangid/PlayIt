@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_app/")({
 function HomePage() {
   const { data, isLoading, error } = useGetAllVideosQuery({});
 
-  const videos = data?.data?.docs || data?.data || [];
+  const videos = data?.data?.videos ?? [];
 
   return (
     <div>
